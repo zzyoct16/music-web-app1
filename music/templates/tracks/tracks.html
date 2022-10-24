@@ -1,0 +1,89 @@
+{% extends 'layout.html' %} {% block content %}
+<main class="track">
+    <div class="track_container">
+        {% for key, value in selected_tracks.items() %}
+        {% if key == "track_data" %}
+            <div class="track_card">
+                <div class="video-container">
+                    <iframe src="https://www.youtube-nocookie.com/embed/{{value.video}}?autoplay=1&controls=0&showinfo=0&autohide=1&playsinline=1&playlist={{value.video}}&loop=1&rel=0" frameborder="0" allow="autoplay; fullscreen">
+                    </iframe>
+                </div>
+                <h1 class="glitch">
+                    <span aria-hidden="true">{{value.title}}</span>
+                    {{value.title}}
+                    <span aria-hidden="true">{{value.title}}</span>
+                </h1>
+            </div>
+            <div class="info">
+                <h5>{{value.artist.full_name}}</h5>
+                <div class="rating">
+                    <div class="rate">{{value.rating}}</div>
+                    {% for i in range(1,6) %}
+                        {% if i > value.rating %}
+                            <i id="{{value.track_id|string() + '_' + i|string()}}" class="fa-regular fa-star" onclick="updateStars(this.id)"></i>
+                        {% else %}
+                            <i id="{{value.track_id|string() + '_' + i|string()}}" class="fa-solid fa-star" onclick="updateStars(this.id)"></i>
+                        {% endif %}
+                    {%endfor%}
+                </div>
+            </div>
+                
+            
+        {%elif key == "message"%}
+            <p>{{value}}</p>
+        {% else %}
+            {% if value != {} %}
+            
+            <div class="switch">
+                {% if value['previous'] != request.full_path %}
+                <div class="left">
+                    <a href="{{value['previous']}}"><i class="fa-solid fa-angles-left"></i> Previous</a>
+                </div>
+                {% else %}
+                <div class="left-disable">
+                    <a href="{{value['previous']}}"><i class="fa-solid fa-angles-left"></i> Previous</a>
+                </div>
+                {% endif %}
+                {% if value['next'] != request.full_path %}
+                <div class="right">
+                    <a href="{{value['next']}}">Next <i class="fa-solid fa-angles-right"></i></a>
+                </div>
+                {% else %}
+                <div class="left-disable">
+                    <a href="{{value['next']}}">Next <i class="fa-solid fa-angles-right"></i></a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        {% endif %}
+        {%endfor%}
+        
+    </div>
+
+    
+    <script type="text/javascript">
+        function updateStars(rating) {
+        const params = rating.split('_');
+        const data = {
+            'value': params[1],
+            'track_id': params[0]
+        };
+
+        fetch('{{url_for("tracks_bp.review_track")}}', {
+            method: 'post',
+            body: JSON.stringify(data),
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            if(data['message'] != 'success') {
+                window.location.replace(data['message']);
+            } else {
+                location.reload();
+            }
+        })
+    }
+    </script>
+    
+    
+</main>
+{% endblock %}

@@ -1,0 +1,34 @@
+<nav id="nav">
+ 
+    <div id="genres">
+      <button class="openbtn" onclick="openNav()">
+        {%if request.args.to_dict()|length == 0 or request.args.to_dict()|length == 1 %}
+          <div class='bold'>Current channel:</div>
+          <div class='btn-text'>All</div>
+        {% else %}
+          {% for key, item in request.args.to_dict().items()%}
+            {% if key != "page_num" %}
+            <div class='bold'>Current channel:</div>
+            <div class='btn-text'>{{key}}/{{item}}</div>
+            {%endif%}
+          {%endfor%}
+        {%endif%}
+      </button>
+      <i id="small-openbtn" class="fa-solid fa-bars" onclick="openNav()"></i>
+    </div>
+  
+    
+    <div id="logo">
+      <a href="{{url_for('tracks_bp.view_all_tracks')}}"><img src="{{ url_for('static', filename='sound_track_logo.png') }}"/></a>
+    </div>
+    
+    <div id="nav-header">
+      {% if 'user_name' in session %}
+      <a href="{{url_for('authentication_bp.logout')}}" id="user"><span>Hello, {{ session['user_name'] }}</span></a>
+      {% else %}
+      <a href="{{url_for('authentication_bp.login')}}"><i class="fa-solid fa-user"></i></a>
+      {% endif %}
+    </div>
+    
+    
+</nav>
